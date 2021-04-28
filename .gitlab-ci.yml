@@ -1,0 +1,15 @@
+image: docker
+
+services:
+  - docker:dind
+
+stages:
+  - deploy
+
+step-deploy-prod:
+  stage: deploy
+  script:
+    - sudo touch acme.json && sudo chmod 600 acme.json
+    - docker network ls|grep infrastructure > /dev/null || docker network create infrastructure
+    - docker-compose up -d
+  environment: production
