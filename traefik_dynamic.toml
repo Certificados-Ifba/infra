@@ -5,8 +5,5 @@
 
 [http.routers.api]
   rule = "Host(`monitor.teiu.com.br`)"
-  #entrypoints = ["websecure"]
   middlewares = ["simpleAuth"]
   service = "api@internal"
-  #[http.routers.api.tls]
-    #certResolver = "lets-encrypt"
