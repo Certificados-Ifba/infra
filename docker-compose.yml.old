@@ -1,0 +1,31 @@
+version: "3.3"
+services:
+  traefik:
+    image: "traefik:v2.4"
+    container_name: traefik
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - ./acme.json:/acme.json
+      - ./traefik_dynamic.toml:/traefik_dynamic.toml
+      - ./traefik.toml:/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - web
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer/data:/data
+    labels:
+      - traefik.http.routers.portainer.rule=Host(`docker.teiu.com.br`)
+      - traefik.port=80
+    networks:
+      - web
+networks:
+  web:
+    external:
+      name: infrastructure

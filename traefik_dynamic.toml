@@ -1,9 +1,0 @@
-[http.middlewares.simpleAuth.basicAuth]
-  users = [
-    "admin:$apr1$99iTefgu$H1M2x4dhMST59Iwpl/7lb0"
-  ]
-
-[http.routers.api]
-  rule = "Host(`monitor.teiu.com.br`)"
-  middlewares = ["simpleAuth"]
-  service = "api@internal"
