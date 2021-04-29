@@ -6,26 +6,26 @@ services:
     environment:
       - TZ=America/Bahia
     command:
-      - "--log.level=DEBUG"
-      - "--api.dashboard=true"
-      - "--metrics.prometheus=true"
-      - "--metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000"
-      - "--metrics.prometheus.addEntryPointsLabels=true"
-      - "--metrics.prometheus.addServicesLabels=true"
-      - "--tracing.serviceName=tracing"
-      - "--tracing.jaeger=true"
-      - "--tracing.jaeger.samplingServerURL=http://jaeger:5778/sampling"
-      - "--tracing.jaeger.samplingType=const"
-      - "--tracing.jaeger.samplingParam=1.0"
-      - "--tracing.jaeger.localAgentHostPort=jaeger:6831"
-      - "--providers.docker=true"
-      - "--providers.docker.swarmmode=true"
-      - "--providers.docker.watch"
-      - "--log.filePath=/var/log/traefik.log"
-      - "--log.format=json"
-      - "--accesslog.filepath=/var/log/access.log"
-      - "--accesslog.format=json"
-      - "--accesslog.fields.names.StartUTC=drop"
+      - '--log.level=DEBUG'
+      - '--api.dashboard=true'
+      - '--metrics.prometheus=true'
+      - '--metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000'
+      - '--metrics.prometheus.addEntryPointsLabels=true'
+      - '--metrics.prometheus.addServicesLabels=true'
+      - '--tracing.serviceName=tracing'
+      - '--tracing.jaeger=true'
+      - '--tracing.jaeger.samplingServerURL=http://jaeger:5778/sampling'
+      - '--tracing.jaeger.samplingType=const'
+      - '--tracing.jaeger.samplingParam=1.0'
+      - '--tracing.jaeger.localAgentHostPort=jaeger:6831'
+      - '--providers.docker=true'
+      - '--providers.docker.swarmmode=true'
+      - '--providers.docker.watch'
+      - '--log.filePath=/var/log/traefik.log'
+      - '--log.format=json'
+      - '--accesslog.filepath=/var/log/access.log'
+      - '--accesslog.format=json'
+      - '--accesslog.fields.names.StartUTC=drop'
     networks:
       - traefik
       - inbound
@@ -47,13 +47,13 @@ services:
     deploy:
       mode: global
       labels:
-        - "traefik.http.routers.monitor.rule=Host(`monitor.teiu.com.br`)"
-        - "traefik.http.routers.monitor.service=api@internal"
-        - "traefik.http.routers.monitor.middlewares=auth"
-        - "traefik.http.middlewares.auth.basicauth.users=admin:$apr1$99iTefgu$H1M2x4dhMST59Iwpl/7lb0"
-        - "traefik.http.services.prometheus.loadbalancer.server.port=8080"
+        - 'traefik.http.routers.monitor.rule=Host(`monitor.teiu.com.br`)'
+        - 'traefik.http.routers.monitor.service=api@internal'
+        - 'traefik.http.routers.monitor.middlewares=auth'
+        - 'traefik.http.middlewares.auth.basicauth.users=${CREDENTIAL}'
+        - 'traefik.http.services.prometheus.loadbalancer.server.port=8080'
         # Dummy service for Swarm port detection. The port can be any valid integer value.
-        - "traefik.http.services.dummy-svc.loadbalancer.server.port=9999"
+        - 'traefik.http.services.dummy-svc.loadbalancer.server.port=9999'
       placement:
         constraints:
           - node.role == manager
@@ -76,10 +76,10 @@ services:
       - inbound
     deploy:
       labels:
-        - "traefik.http.routers.prometheus.rule=Host(`prometheus.teiu.com.br`)"
-        - "traefik.http.routers.prometheus.service=prometheus"
-        - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
-        - "traefik.docker.network=inbound"
+        - 'traefik.http.routers.prometheus.rule=Host(`prometheus.teiu.com.br`)'
+        - 'traefik.http.routers.prometheus.service=prometheus'
+        - 'traefik.http.services.prometheus.loadbalancer.server.port=9090'
+        - 'traefik.docker.network=inbound'
       placement:
         constraints:
           - node.role==manager
@@ -97,13 +97,13 @@ services:
       - ./grafana/config.monitoring
     networks:
       - inbound
-    user: "104"
+    user: '104'
     deploy:
       labels:
-        - "traefik.http.routers.grafana.rule=Host(`grafana.teiu.com.br`)"
-        - "traefik.http.routers.grafana.service=grafana"
-        - "traefik.http.services.grafana.loadbalancer.server.port=3000"
-        - "traefik.docker.network=inbound"
+        - 'traefik.http.routers.grafana.rule=Host(`grafana.teiu.com.br`)'
+        - 'traefik.http.routers.grafana.service=grafana'
+        - 'traefik.http.services.grafana.loadbalancer.server.port=3000'
+        - 'traefik.docker.network=inbound'
       placement:
         constraints:
           - node.role == manager
@@ -118,10 +118,10 @@ services:
       - inbound
     deploy:
       labels:
-        - "traefik.http.routers.portainer.rule=Host(`docker.teiu.com.br`)"
-        - "traefik.http.routers.portainer.service=portainer"
-        - "traefik.http.services.portainer.loadbalancer.server.port=9000"
-        - "traefik.docker.network=inbound"
+        - 'traefik.http.routers.portainer.rule=Host(`docker.teiu.com.br`)'
+        - 'traefik.http.routers.portainer.service=portainer'
+        - 'traefik.http.services.portainer.loadbalancer.server.port=9000'
+        - 'traefik.docker.network=inbound'
       placement:
         constraints:
           - node.role==manager
@@ -132,21 +132,21 @@ services:
     environment:
       COLLECTOR_ZIPKIN_HTTP_PORT: 9411
     ports:
-      - "5775:5775/udp"
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-      - "5778:5778"
-      - "16686:16686"
-      - "14268:14268"
-      - "9411:9411"
+      - '5775:5775/udp'
+      - '6831:6831/udp'
+      - '6832:6832/udp'
+      - '5778:5778'
+      - '16686:16686'
+      - '14268:14268'
+      - '9411:9411'
     networks:
       - inbound
     deploy:
       labels:
-        - "traefik.http.routers.jaeger.rule=Host(`jaeger.teiu.com.br`)"
-        - "traefik.http.routers.jaeger.service=jaeger"
-        - "traefik.http.services.jaeger.loadbalancer.server.port=16686"
-        - "traefik.docker.network=inbound"
+        - 'traefik.http.routers.jaeger.rule=Host(`jaeger.teiu.com.br`)'
+        - 'traefik.http.routers.jaeger.service=jaeger'
+        - 'traefik.http.services.jaeger.loadbalancer.server.port=16686'
+        - 'traefik.docker.network=inbound'
       placement:
         constraints:
           - node.role==manager
@@ -156,16 +156,16 @@ services:
     image: jaegertracing/example-hotrod:1.17
     command: all
     environment:
-      JAEGER_AGENT_HOST: "jaeger"
-      JAEGER_AGENT_PORT: "6831"
+      JAEGER_AGENT_HOST: 'jaeger'
+      JAEGER_AGENT_PORT: '6831'
     networks:
       - inbound
     deploy:
       labels:
-        - "traefik.http.routers.hotrod.rule=Host(`hotrod.teiu.com.br`)"
-        - "traefik.http.routers.hotrod.service=hotrod"
-        - "traefik.http.services.hotrod.loadbalancer.server.port=8080"
-        - "traefik.docker.network=inbound"
+        - 'traefik.http.routers.hotrod.rule=Host(`hotrod.teiu.com.br`)'
+        - 'traefik.http.routers.hotrod.service=hotrod'
+        - 'traefik.http.services.hotrod.loadbalancer.server.port=8080'
+        - 'traefik.docker.network=inbound'
       placement:
         constraints:
           - node.role==manager
