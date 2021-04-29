@@ -46,17 +46,17 @@ services:
         mode: ingress
     deploy:
       mode: global
+      labels:
+        - "traefik.http.routers.monitor.rule=Host(`monitor.teiu.com.br`)"
+        - "traefik.http.routers.monitor.service=api@internal"
+        - "traefik.http.routers.monitor.middlewares=auth"
+        - "traefik.http.middlewares.auth.basicauth.users=admin:$apr1$99iTefgu$H1M2x4dhMST59Iwpl/7lb0"
+        - "traefik.http.services.prometheus.loadbalancer.server.port=8080"
+        # Dummy service for Swarm port detection. The port can be any valid integer value.
+        - "traefik.http.services.dummy-svc.loadbalancer.server.port=9999"
       placement:
         constraints:
           - node.role == manager
-        labels:
-          - "traefik.http.routers.monitor.rule=Host(`monitor.teiu.com.br`)"
-          - "traefik.http.routers.monitor.service=api@internal"
-          - "traefik.http.routers.monitor.middlewares=auth"
-          - "traefik.http.middlewares.auth.basicauth.users=admin:$apr1$99iTefgu$H1M2x4dhMST59Iwpl/7lb0"
-          - "traefik.http.services.prometheus.loadbalancer.server.port=8080"
-          # Dummy service for Swarm port detection. The port can be any valid integer value.
-          - "traefik.http.services.dummy-svc.loadbalancer.server.port=9999"
       update_config:
         parallelism: 1
         delay: 10s
@@ -76,13 +76,13 @@ services:
       - inbound
     deploy:
       labels:
-       - "traefik.http.routers.prometheus.rule=Host(`prometheus.teiu.com.br`)"
-       - "traefik.http.routers.prometheus.service=prometheus"
-       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
-       - "traefik.docker.network=inbound"
+        - "traefik.http.routers.prometheus.rule=Host(`prometheus.teiu.com.br`)"
+        - "traefik.http.routers.prometheus.service=prometheus"
+        - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+        - "traefik.docker.network=inbound"
       placement:
         constraints:
-        - node.role==manager
+          - node.role==manager
       restart_policy:
         condition: on-failure
   
@@ -118,13 +118,13 @@ services:
       - inbound
     deploy:
       labels:
-       - "traefik.http.routers.portainer.rule=Host(`docker.teiu.com.br`)"
-       - "traefik.http.routers.portainer.service=portainer"
-       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
-       - "traefik.docker.network=inbound"
+        - "traefik.http.routers.portainer.rule=Host(`docker.teiu.com.br`)"
+        - "traefik.http.routers.portainer.service=portainer"
+        - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+        - "traefik.docker.network=inbound"
       placement:
         constraints:
-        - node.role==manager
+          - node.role==manager
       restart_policy:
         condition: on-failure
   jaeger:
@@ -143,13 +143,13 @@ services:
       - inbound
     deploy:
       labels:
-       - "traefik.http.routers.jaeger.rule=Host(`jaeger.teiu.com.br`)"
-       - "traefik.http.routers.jaeger.service=jaeger"
-       - "traefik.http.services.jaeger.loadbalancer.server.port=16686"
-       - "traefik.docker.network=inbound"
+        - "traefik.http.routers.jaeger.rule=Host(`jaeger.teiu.com.br`)"
+        - "traefik.http.routers.jaeger.service=jaeger"
+        - "traefik.http.services.jaeger.loadbalancer.server.port=16686"
+        - "traefik.docker.network=inbound"
       placement:
         constraints:
-        - node.role==manager
+          - node.role==manager
       restart_policy:
         condition: on-failure
   hotrod:
@@ -162,13 +162,13 @@ services:
       - inbound
     deploy:
       labels:
-       - "traefik.http.routers.hotrod.rule=Host(`hotrod.teiu.com.br`)"
-       - "traefik.http.routers.hotrod.service=hotrod"
-       - "traefik.http.services.hotrod.loadbalancer.server.port=8080"
-       - "traefik.docker.network=inbound"
+        - "traefik.http.routers.hotrod.rule=Host(`hotrod.teiu.com.br`)"
+        - "traefik.http.routers.hotrod.service=hotrod"
+        - "traefik.http.services.hotrod.loadbalancer.server.port=8080"
+        - "traefik.docker.network=inbound"
       placement:
         constraints:
-        - node.role==manager
+          - node.role==manager
       restart_policy:
         condition: on-failure
 
