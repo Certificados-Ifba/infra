@@ -9,5 +9,6 @@ stages:
 step-deploy-prod:
   stage: deploy
   script:
+    - sudo touch acme.json && sudo chmod 600 acme.json
     - docker stack deploy -c docker-compose.yml traefik
   environment: production
