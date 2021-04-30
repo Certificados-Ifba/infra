@@ -8,6 +8,11 @@ services:
     command:
       - '--log.level=DEBUG'
       - '--api.dashboard=true'
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.websecure.address=:443'
+      - '--certificatesresolvers.myresolver.acme.tlschallenge=true'
+      - '--certificatesresolvers.myresolver.acme.email=ti3@teiu.com.br'
+      - '--certificatesresolvers.myresolver.acme.storage=acme.json'
       - '--metrics.prometheus=true'
       - '--metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000'
       - '--metrics.prometheus.addEntryPointsLabels=true'
@@ -21,9 +26,9 @@ services:
       - '--providers.docker=true'
       - '--providers.docker.swarmmode=true'
       - '--providers.docker.watch'
-      - '--log.filePath=/var/log/traefik.log'
+      - '--log.filePath=/var/log/traefik/traefik.log'
       - '--log.format=json'
-      - '--accesslog.filepath=/var/log/access.log'
+      - '--accesslog.filepath=/var/log/traefik/access.log'
       - '--accesslog.format=json'
       - '--accesslog.fields.names.StartUTC=drop'
     networks:
@@ -50,6 +55,7 @@ services:
         - 'traefik.http.routers.monitor.rule=Host(`monitor.teiu.com.br`)'
         - 'traefik.http.routers.monitor.service=api@internal'
         - 'traefik.http.routers.monitor.middlewares=auth'
+        - 'traefik.http.routers.monitor.entrypoints=web'
         - 'traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$hhuHPZqI$$XkMz4utiD5N2wo0FP.OyF0'
         - 'traefik.http.services.monitor.loadbalancer.server.port=8080'
         # Dummy service for Swarm port detection. The port can be any valid integer value.
@@ -78,6 +84,7 @@ services:
       labels:
         - 'traefik.http.routers.prometheus.rule=Host(`prometheus.teiu.com.br`)'
         - 'traefik.http.routers.prometheus.service=prometheus'
+        - 'traefik.http.routers.monitor.entrypoints=web'
         - 'traefik.http.services.prometheus.loadbalancer.server.port=9090'
         - 'traefik.docker.network=inbound'
       placement:
@@ -102,6 +109,7 @@ services:
       labels:
         - 'traefik.http.routers.grafana.rule=Host(`grafana.teiu.com.br`)'
         - 'traefik.http.routers.grafana.service=grafana'
+        - 'traefik.http.routers.grafana.entrypoints=web'
         - 'traefik.http.services.grafana.loadbalancer.server.port=3000'
         - 'traefik.docker.network=inbound'
       placement:
@@ -120,6 +128,7 @@ services:
       labels:
         - 'traefik.http.routers.portainer.rule=Host(`docker.teiu.com.br`)'
         - 'traefik.http.routers.portainer.service=portainer'
+        - 'traefik.http.routers.portainer.entrypoints=web'
         - 'traefik.http.services.portainer.loadbalancer.server.port=9000'
         - 'traefik.docker.network=inbound'
       placement:
@@ -145,6 +154,7 @@ services:
       labels:
         - 'traefik.http.routers.jaeger.rule=Host(`jaeger.teiu.com.br`)'
         - 'traefik.http.routers.jaeger.service=jaeger'
+        - 'traefik.http.routers.jaeger.entrypoints=web'
         - 'traefik.http.services.jaeger.loadbalancer.server.port=16686'
         - 'traefik.docker.network=inbound'
       placement:
@@ -164,6 +174,7 @@ services:
       labels:
         - 'traefik.http.routers.hotrod.rule=Host(`hotrod.teiu.com.br`)'
         - 'traefik.http.routers.hotrod.service=hotrod'
+        - 'traefik.http.routers.hotrod.entrypoints=web'
         - 'traefik.http.services.hotrod.loadbalancer.server.port=8080'
         - 'traefik.docker.network=inbound'
       placement:
