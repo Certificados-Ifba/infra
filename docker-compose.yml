@@ -84,7 +84,7 @@ services:
       labels:
         - 'traefik.http.routers.prometheus.rule=Host(`prometheus.teiu.com.br`)'
         - 'traefik.http.routers.prometheus.service=prometheus'
-        - 'traefik.http.routers.monitor.entrypoints=web'
+        - 'traefik.http.routers.prometheus.entrypoints=web'
         - 'traefik.http.services.prometheus.loadbalancer.server.port=9090'
         - 'traefik.docker.network=inbound'
       placement:
