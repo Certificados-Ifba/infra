@@ -9,7 +9,7 @@ stages:
 step-deploy-prod:
   stage: deploy
   script:
-    - echo "CREDENTIAL=$(htpasswd -nb $TRAEFIK_USER $TRAEFIK_PASS)" >> .env
+    - CREDENTIAL=$(htpasswd -nb $TRAEFIK_USER $TRAEFIK_PASS) && echo "CREDENTIAL=${CREDENTIAL//$/\$\$}" >> .env
     - sudo touch acme.json && sudo chmod 600 acme.json
     - docker stack deploy -c docker-compose.yml traefik
     - docker system prune -f
