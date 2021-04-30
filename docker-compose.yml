@@ -50,7 +50,7 @@ services:
         - 'traefik.http.routers.monitor.rule=Host(`monitor.teiu.com.br`)'
         - 'traefik.http.routers.monitor.service=api@internal'
         - 'traefik.http.routers.monitor.middlewares=auth'
-        - 'traefik.http.middlewares.auth.basicauth.users=${CREDENTIAL}'
+        - 'traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$hhuHPZqI$$XkMz4utiD5N2wo0FP.OyF0'
         - 'traefik.http.services.monitor.loadbalancer.server.port=8080'
         # Dummy service for Swarm port detection. The port can be any valid integer value.
         - 'traefik.http.services.dummy-svc.loadbalancer.server.port=9999'
