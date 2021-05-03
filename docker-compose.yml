@@ -8,6 +8,7 @@ services:
     command:
       - '--log.level=DEBUG'
       - '--api.dashboard=true'
+      - '--pilot.token=7bc79d77-80ba-4528-a221-bc4739538b78'
       - '--entrypoints.web.address=:80'
       - '--entrypoints.websecure.address=:443'
       - '--certificatesresolvers.myresolver.acme.tlschallenge=true'
@@ -156,26 +157,6 @@ services:
         - 'traefik.http.routers.jaeger.service=jaeger'
         - 'traefik.http.routers.jaeger.entrypoints=web'
         - 'traefik.http.services.jaeger.loadbalancer.server.port=16686'
-        - 'traefik.docker.network=inbound'
-      placement:
-        constraints:
-          - node.role==manager
-      restart_policy:
-        condition: on-failure
-  hotrod:
-    image: jaegertracing/example-hotrod:1.17
-    command: all
-    environment:
-      JAEGER_AGENT_HOST: 'jaeger'
-      JAEGER_AGENT_PORT: '6831'
-    networks:
-      - inbound
-    deploy:
-      labels:
-        - 'traefik.http.routers.hotrod.rule=Host(`hotrod.teiu.com.br`)'
-        - 'traefik.http.routers.hotrod.service=hotrod'
-        - 'traefik.http.routers.hotrod.entrypoints=web'
-        - 'traefik.http.services.hotrod.loadbalancer.server.port=8080'
         - 'traefik.docker.network=inbound'
       placement:
         constraints:
