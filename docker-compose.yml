@@ -164,6 +164,33 @@ services:
       restart_policy:
         condition: on-failure
 
+  registry:
+    image: registry:2
+    environment:
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.password
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+    ports:
+    - '5000:5000'
+    volumes:
+      - ./auth:/auth
+      - registry_data:/data
+    networks:
+      - inbound
+    deploy:
+      labels:
+        - 'traefik.http.routers.registry.rule=Host(`api.teiu.com.br`)'
+        - 'traefik.http.routers.registry.service=registry'
+        - 'traefik.http.routers.registry.entrypoints=web'
+        - 'traefik.http.services.registry.loadbalancer.server.port=5000'
+        - 'traefik.docker.network=inbound'
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
+
 networks:
   traefik:
     driver: overlay
@@ -177,3 +204,4 @@ volumes:
     prometheus_data: {}
     grafana_data: {}
     portainer_data: {}
+    registry_data: {}
