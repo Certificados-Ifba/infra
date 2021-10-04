@@ -15,4 +15,4 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: configure
-      run: EMAIL=${{secrets.EMAIL}} DOMAIN=vca.ifba.edu.br bash ./deploy.sh
+      run: EMAIL=${{deploy.EMAIL}} DOMAIN=vca.ifba.edu.br bash ./deploy.sh
