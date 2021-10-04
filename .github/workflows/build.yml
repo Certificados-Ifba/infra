@@ -19,5 +19,3 @@ jobs:
         echo "deploying traefik stack in https mode"
         printf "${{secrets.ENV_USER_TRAEFIK}}:$(openssl passwd -apr1 ${{secrets.ENV_PASS_TRAEFIK}})\n" > ./htpasswd
         docker stack deploy -c docker-compose.yml infra
-        echo "Traefik UI is available at:"
-        echo "- https://${secrets.ENV_DOMAIN}"
