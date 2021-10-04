@@ -12,10 +12,13 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Docker build
-      id: docker_build
-      run: |2
-        export $(echo "${{secrets.ENV_EMAIL}}" | xargs)
-        echo "deploying traefik stack in https mode"
-        printf "${{secrets.ENV_USER_TRAEFIK}}:$(openssl passwd -apr1 ${{secrets.ENV_PASS_TRAEFIK}})\n" > ./htpasswd
-        docker stack deploy -c docker-compose.yml infra
+#     - name: Docker build
+#       id: docker_build
+#       run: |2
+#         export $(echo "${{secrets.ENV_EMAIL}}" | xargs)
+#         echo "deploying traefik stack in https mode"
+#         printf "${{secrets.ENV_USER_TRAEFIK}}:$(openssl passwd -apr1 ${{secrets.ENV_PASS_TRAEFIK}})\n" > ./htpasswd
+#         docker stack deploy -c docker-compose.yml infra
+    - name: Docker deploy
+      id: docker_deploy
+      run: EMAIL=certificados.vdc@ifba.edu.br DOMAIN=vca.ifba.edu.br bash ./deploy.sh
