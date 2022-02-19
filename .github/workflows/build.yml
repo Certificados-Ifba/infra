@@ -9,7 +9,7 @@ jobs:
     runs-on: self-hosted
     environment: 
       name: production
-      url: http://vca.ifba.edu.br:81
+      url: http://vca.ifba.edu.br:81/proxy
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -23,5 +23,5 @@ jobs:
         USER: ${{ secrets.USER }}
         PASS: ${{ secrets.PASS }}
       run: |
-        EMAIL=$EMAIL DOMAIN=$DOMAIN USER=$USER bash ./deploy.sh
+        bash ./deploy.sh
       id: docker_deploy
