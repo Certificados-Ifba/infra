@@ -11,7 +11,6 @@ services:
       - '--providers.docker=true'
       - '--providers.docker.swarmmode=true'
       - '--providers.docker.watch'
-      - '--log.level=INFO'
       - '--log.filePath=/var/log/traefik/traefik.log'
       - '--log.format=json'
       - '--accesslog.filepath=/var/log/traefik/access.log'
