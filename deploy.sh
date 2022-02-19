@@ -8,5 +8,4 @@ printf "${USER}:$(openssl passwd -apr1 ${PASS})\n" > ./htpasswd
 
 echo "deploying traefik stack in http mode"
 docker stack deploy -c docker-compose.yml infra
-echo "Traefik UI is available at:"
-echo "- http://${DOMAIN}/proxy"
+echo "Traefik UI is available."
