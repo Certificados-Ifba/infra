@@ -51,12 +51,7 @@ services:
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=web
         - traefik.http.routers.traefik.middlewares=auth
-        - traefik.http.routers.traefik.rule=(Host(`${DOMAIN:-localhost}`) && PathPrefix(`/proxy`))
-        - traefik.http.routers.traefik.middlewares=traefik-redirectregex, traefik-replacepathregex  
-        - traefik.http.middlewares.traefik-replacepathregex.replacepathregex.regex=^/proxy/(.*)
-        - traefik.http.middlewares.traefik-replacepathregex.replacepathregex.replacement=/$$1
-        - traefik.http.middlewares.traefik-redirectregex.redirectregex.regex=^(.*)/proxy$$
-        - traefik.http.middlewares.traefik-redirectregex.redirectregex.replacement=$$1/proxy/
+        - traefik.http.routers.traefik.rule=(Host(`${DOMAIN:-localhost}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`)))
         - traefik.http.middlewares.auth.basicauth.usersfile=/etc/htpasswd
         - traefik.http.services.traefik.loadbalancer.server.port=8080
         # Dummy service for Swarm port detection. The port can be any valid integer value.
