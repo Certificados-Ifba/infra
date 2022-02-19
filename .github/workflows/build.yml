@@ -7,8 +7,9 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  deployment:
     runs-on: self-hosted
+    environment: production
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -19,6 +20,18 @@ jobs:
 #         echo "deploying traefik stack in https mode"
 #         printf "${{secrets.ENV_USER_TRAEFIK}}:$(openssl passwd -apr1 ${{secrets.ENV_PASS_TRAEFIK}})\n" > ./htpasswd
 #         docker stack deploy -c docker-compose.yml infra
+    - name: Destroy docker
+      shell: bash
+      run: |
+        ./destroy.sh
+      id: docker_destroy
     - name: Docker deploy
+      shell: bash
+      env:
+        EMAIL: ${{ secrets.EMAIL }}
+        DOMAIN: ${{ secrets.DOMAIN }}
+        USER: ${{ secrets.USER }}
+        PASS: ${{ secrets.PASS }}
+      run: |
+        EMAIL="$EMAIL" DOMAIN="$DOMAIN" USER="$USER" PASS="$PASS" bash ./deploy.sh
       id: docker_deploy
-      run: EMAIL=certificados.vdc@ifba.edu.br DOMAIN=vca.ifba.edu.br bash ./deploy.sh
