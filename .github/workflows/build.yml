@@ -27,5 +27,10 @@ jobs:
         bash ./deploy.sh
       id: docker_deploy
     - name: Check on failures
-      if: ${{$(docker stack services infra | grep infra >/dev/null ; echo $?) -eq "1")}}
-      run: exit 1
+      id: docker_check
+      run: |
+        if [ $(docker stack services infra | grep infra >/dev/null ; echo $?) -eq "1" ]
+          then
+            echo "Falha no deploy da aplicação, tente novamente."
+            exit 1
+        fi
