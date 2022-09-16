@@ -26,3 +26,6 @@ jobs:
       run: |
         bash ./deploy.sh
       id: docker_deploy
+    - name: Check on failures
+      if: ($(docker stack services infra | grep infra >/dev/null ; echo $?) -eq "1")
+      run: exit 1
