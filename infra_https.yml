@@ -59,9 +59,10 @@ services:
         - traefik.docker.lbswarm=true
         - traefik.docker.network=public
         - traefik.http.routers.traefik.service=api@internal
-        - traefik.http.routers.traefik.entrypoints=web,websecure
+        - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.middlewares=auth
         - traefik.http.routers.traefik.rule=Host(`${DOMAIN:-localhost}`)
+        - traefik.http.routers.traefik.tls.certresolver=myresolver
         - traefik.http.middlewares.auth.basicauth.usersfile=/etc/htpasswd
         - traefik.http.services.traefik.loadbalancer.server.port=8080
         # Dummy service for Swarm port detection. The port can be any valid integer value.
@@ -89,6 +90,7 @@ services:
         - traefik.http.routers.portainer.entrypoints=websecure
         - traefik.http.routers.portainer.rule=(Host(`${DOMAIN:-localhost}`) && PathPrefix(`/docker`))
         - traefik.http.routers.portainer.middlewares=portainer-redirectregex, portainer-replacepathregex  
+        - traefik.http.routers.portainer.tls.certresolver=myresolver
         - traefik.http.middlewares.portainer-replacepathregex.replacepathregex.regex=^/docker/(.*)
         - traefik.http.middlewares.portainer-replacepathregex.replacepathregex.replacement=/$$1
         - traefik.http.middlewares.portainer-redirectregex.redirectregex.regex=^(.*)/docker$$
