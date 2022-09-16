@@ -16,7 +16,6 @@ services:
       - --providers.docker.watch
       - --log.filePath=/var/log/traefik/traefik.log
       - --log.format=json
-      - --log.level=DEBUG
       - --accesslog.filepath=/var/log/traefik/access.log
       - --accesslog.format=json
       - --accesslog.fields.names.StartUTC=drop
