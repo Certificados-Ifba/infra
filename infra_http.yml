@@ -1,0 +1,123 @@
+version: '3.7'
+
+services:
+  traefik:
+    image: traefik:v2.5
+    environment:
+      - TZ=America/Bahia
+    command:
+      - --api.dashboard=true
+      - --entrypoints.web.address=:80
+      - --providers.docker=true
+      - --providers.docker.swarmmode=true
+      - --providers.docker.watch
+      - --log.filePath=/var/log/traefik/traefik.log
+      - --log.format=json
+      - --accesslog.filepath=/var/log/traefik/access.log
+      - --accesslog.format=json
+      - --accesslog.fields.names.StartUTC=drop
+    ports:
+      - target: 80
+        published: 80
+        mode: host
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: ingress
+    volumes:
+      - traefik_logs:/var/log/traefik
+      - /var/run/docker.sock:/var/run/docker.sock
+    configs:
+      - source: traefik_htpasswd
+        target: /etc/htpasswd
+    networks:
+      - public
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+        preferences:
+          - spread: node.id
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      labels:
+        - traefik.enable=true
+        - traefik.docker.lbswarm=true
+        - traefik.docker.network=public
+        - traefik.http.routers.traefik.service=api@internal
+        - traefik.http.routers.traefik.entrypoints=web
+        - traefik.http.routers.traefik.middlewares=auth
+        - traefik.http.routers.traefik.rule=Host(`${DOMAIN:-localhost}`)
+        - traefik.http.middlewares.auth.basicauth.usersfile=/etc/htpasswd
+        - traefik.http.services.traefik.loadbalancer.server.port=8080
+        # Dummy service for Swarm port detection. The port can be any valid integer value.
+        - traefik.http.services.dummy-svc.loadbalancer.server.port=9999
+
+  portainer:
+    image: portainer/portainer
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - public
+    depends_on: 
+      - traefik
+    deploy:
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=public
+        - traefik.http.routers.portainer.service=portainer
+        - traefik.http.routers.portainer.entrypoints=web
+        - traefik.http.routers.portainer.rule=(Host(`${DOMAIN:-localhost}`) && PathPrefix(`/docker`))
+        - traefik.http.routers.portainer.middlewares=portainer-redirectregex, portainer-replacepathregex  
+        - traefik.http.middlewares.portainer-replacepathregex.replacepathregex.regex=^/docker/(.*)
+        - traefik.http.middlewares.portainer-replacepathregex.replacepathregex.replacement=/$$1
+        - traefik.http.middlewares.portainer-redirectregex.redirectregex.regex=^(.*)/docker$$
+        - traefik.http.middlewares.portainer-redirectregex.redirectregex.replacement=$$1/docker/
+        - traefik.http.services.portainer.loadbalancer.server.port=9000
+
+  registry:
+    image: registry:2
+    environment:
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+    ports:
+    - 5000:5000
+    volumes:
+      - registry_data:/data
+    networks:
+      - private
+    deploy:
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
+      labels:
+        - traefik.http.routers.registry.service=registry
+        - traefik.http.services.registry.loadbalancer.server.port=5000
+
+networks:
+  private:
+    name: private
+    driver: overlay
+  public:
+    name: public
+    driver: overlay
+
+volumes:
+  traefik_logs: {}
+  portainer_data: {}
+  registry_data: {}
+      
+configs:
+  traefik_htpasswd:
+    file: ./htpasswd
