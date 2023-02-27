@@ -27,16 +27,14 @@ services:
     volumes:
       - traefik_logs:/var/log/traefik
       - /var/run/docker.sock:/var/run/docker.sock
-    configs:
-      - source: traefik_htpasswd
-        target: /etc/htpasswd
+    secrets:
+      - traefik_htpasswd
     networks:
       - public
     deploy:
       mode: global
       placement:
-        constraints:
-          - node.role == manager
+        constraints: [node.role == manager]
         preferences:
           - spread: node.id
       update_config:
@@ -57,19 +55,38 @@ services:
         # Dummy service for Swarm port detection. The port can be any valid integer value.
         - traefik.http.services.dummy-svc.loadbalancer.server.port=9999
 
+  agent:
+    image: portainer/agent:2.17.1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+      - private
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.platform.os == linux]
+
   portainer:
-    image: portainer/portainer
+    image: portainer/portainer-ce:2.17.1
+    command: -H tcp://tasks.agent:9001 --tlsskipverify
+    ports:
+      - 9443:9443
+      - 9000:9000
+      - 8000:8000
     volumes:
       - portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - public
+      - private
     depends_on: 
       - traefik
+      - agent
     deploy:
+      mode: replicated
+      replicas: 1
       placement:
-        constraints:
-          - node.role==manager
+        constraints: [node.role == manager]
       restart_policy:
         condition: on-failure
       labels:
@@ -97,8 +114,7 @@ services:
       - private
     deploy:
       placement:
-        constraints:
-          - node.role==manager
+        constraints: [node.role == manager]
       restart_policy:
         condition: on-failure
       labels:
@@ -109,6 +125,7 @@ networks:
   private:
     name: private
     driver: overlay
+    attachable: true
   public:
     name: public
     driver: overlay
@@ -117,7 +134,7 @@ volumes:
   traefik_logs: {}
   portainer_data: {}
   registry_data: {}
-      
-configs:
+
+secrets:
   traefik_htpasswd:
     file: ./htpasswd
