@@ -9,7 +9,7 @@ jobs:
     runs-on: self-hosted
     environment: 
       name: production
-      url: https://vca.ifba.edu.br
+      url: "${{ vars.PROTOCOL }}://${{ vars.DOMAIN }}"
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -18,11 +18,11 @@ jobs:
       id: docker_destroy
     - name: Docker deploy
       env:
-        EMAIL: ${{ secrets.EMAIL }}
-        DOMAIN: ${{ secrets.DOMAIN }}
+        EMAIL: ${{ vars.EMAIL }}
+        DOMAIN: ${{ vars.DOMAIN }}
         USER: ${{ secrets.USER }}
         PASS: ${{ secrets.PASS }}
-        PROTOCOL: ${{ secrets.PROTOCOL }}
+        PROTOCOL: ${{ vars.PROTOCOL }}
       run: |
         bash ./deploy.sh
       id: docker_deploy
