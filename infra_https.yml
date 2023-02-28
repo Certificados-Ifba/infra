@@ -38,7 +38,8 @@ services:
       - traefik_certs:/certs
       - /var/run/docker.sock:/var/run/docker.sock
     secrets:
-      - traefik_htpasswd
+      - source: traefik_htpasswd
+        target: /etc/htpasswd
     networks:
       - public
     deploy:
