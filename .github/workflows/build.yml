@@ -13,9 +13,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Destroy docker
-      run: bash ./destroy.sh
-      id: docker_destroy
     - name: Docker deploy
       env:
         EMAIL: ${{ vars.EMAIL }}
